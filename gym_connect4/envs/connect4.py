@@ -48,13 +48,13 @@ class Connect4:
     # Check horizontal
     for c in range(self.cols - 3):
       for r in range(self.rows):
-        if player == brd[c][r] == brd[c][r+1] == brd[c][r+2] == brd[c][r+3]:
+        if player == brd[c][r] == brd[c+1][r] == brd[c+2][r] == brd[c+3][r]:
           return True
 
     # Check vertical 
     for c in range(self.cols):
       for r in range(self.rows - 3):
-        if player == brd[c][r] == brd[c+1][r] == brd[c+2][r] == brd[c+3][r]:
+        if player == brd[c][r] == brd[c][r+1] == brd[c][r+2] == brd[c][r+3]:
           return True
 
     # Check positively sloped diaganols
@@ -66,7 +66,7 @@ class Connect4:
     # Check negatively sloped diaganols
     for c in range(self.cols - 3):
       for r in range(3, self.rows):
-        if player == brd[c][r] == brd[c-1][r+1] == brd[c-2][r+2] == brd[c-3][r+3]:
+        if player == brd[c][r] == brd[c+1][r-1] == brd[c+2][r-2] == brd[c+3][r-3]:
           return True
 
   def show(self):
