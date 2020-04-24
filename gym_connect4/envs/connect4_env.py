@@ -3,6 +3,7 @@ from gym import error, spaces, utils
 from gym.utils import seeding
 
 from itertools import groupby
+import numpy as np
 import random
 
 
@@ -11,21 +12,22 @@ class Connect4Env(gym.Env):
 
   def __init__(self):
     self.action_space = spaces.Discrete(7)
-    self.observation_space = spaces.Box(0, 2, shape=(42,))
+    self.observation_space = spaces.Discrete(42)
     self.reset()
 
   def step(self, action):
     reward = 0
 
+    if action not in self.game.possible_moves:
+      reward = -10
+
     self.game.make_move(action)
 
+    # Check if game is over and change reward accordingly
     status = self.game.winner
-    if status:
+    if status is not None:
       self.done = True
-      reward = 1 if status == 1 else -1
-
-    # Play random opponent move
-    self.game.make_move(self.action_space.sample())
+      reward = 1 if status == 1 else -1 if status == 2 else 0
 
     return [v for col in self.game.board.values() for v in col], reward, self.done, None
 
@@ -51,7 +53,8 @@ class Connect4:
     + board           {index: column}
     + possible_moves  [column indexes]
     + player          1 or 2
-    + winner          0 or 1 or 2
+    + winner          0 or 1 or 2 -> gameover
+                      None        -> in play
 
   Methods
     + show
@@ -67,14 +70,13 @@ class Connect4:
                   6: [0]*6}
     self.possible_moves = [i for i in range(7)]
     self.player = 1
-    self.winner = 0
+    self.winner = None
       
   def make_move(self, move):
     if move not in self.possible_moves:
       return
         
-    # Switch the player and play their move in the top of the specified column
-    self.player = 1 if self.player != 1 else 2
+    # Play their move in the top of the specified column
     top_of_col = self.board[move].index(0)
     self.board[move][top_of_col] = self.player
     
@@ -82,8 +84,14 @@ class Connect4:
     if top_of_col >= 5:
       self.possible_moves.remove(move)
         
+    # Check if the game is over
     if self.check_winner(move, top_of_col):
       self.winner = self.player
+    if not self.possible_moves:
+      self.winner = 0
+
+    # Switch the player
+    self.player = 1 if self.player != 1 else 2
           
   def check_winner(self, col, row):
     val = self.player
@@ -112,9 +120,9 @@ class Connect4:
       # (bounds check)  Diagonal Up
       if row <= 2 and brd[col-1][row+1] == brd[col-2][row+2] == brd[col-3][row+3] == val:
         return True
-        
+
     # check vertical
-    return any(1 for key, group in groupby(brd[col]) if len(list(group)) > 3 and key == val)
+    return any([1 for key, group in groupby(brd[col]) if len(list(group)) > 3 and key == val])
 
   def show(self):
     print()
