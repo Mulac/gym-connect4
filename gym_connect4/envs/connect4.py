@@ -7,11 +7,10 @@ class Connect4:
   Simple connect4 game logic.  For two players 1 & 2.
 
   Attributes
-    + board           {index: column}
-    + legal_moves     [column indexes]
-    + player          1 or -1
-    + winner          0 or 1 or -1 -> gameover
-                      None         -> in play
+    + board           -> np.array( shape=(cols, rows) )
+    + legal_moves     -> list[int]
+    + player          -> int
+    + winner          -> int (or None)
 
   Methods
     + show
@@ -32,10 +31,10 @@ class Connect4:
   @property
   def legal_moves(self):
     return [i for i in range(self.cols) if self.board[i][self.rows - 1] == 0]
-      
+
   def make_move(self, move):
     assert move in self.legal_moves
-        
+
     # Play their move in the top of the specified column
     top_of_col = np.where(self.board[move] == 0)[0][0]
     self.board[move][top_of_col] = self.player
