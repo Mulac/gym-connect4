@@ -8,10 +8,10 @@ class Connect4:
 
   Attributes
     + board           {index: column}
-    + possible_moves  [column indexes]
-    + player          1 or 2
-    + winner          0 or 1 or 2 -> gameover
-                      None        -> in play
+    + legal_moves     [column indexes]
+    + player          1 or -1
+    + winner          0 or 1 or -1 -> gameover
+                      None         -> in play
 
   Methods
     + show
@@ -21,7 +21,13 @@ class Connect4:
     self.cols, self.rows = cols, rows
     self.board = np.zeros(shape=(self.cols, self.rows), dtype=np.int8)
     self.player = 1
-    self.winner = None
+
+  @property
+  def winner(self):
+    return 1 if self.is_winner(1) \
+      else -1 if self.is_winner(-1) \
+        else 0 if self.board.all() \
+          else None
 
   @property
   def legal_moves(self):
@@ -33,12 +39,6 @@ class Connect4:
     # Play their move in the top of the specified column
     top_of_col = np.where(self.board[move] == 0)[0][0]
     self.board[move][top_of_col] = self.player
-        
-    # Check if the game is over
-    self.winner = 1 if self.is_winner(1) \
-      else -1 if self.is_winner(-1) \
-        else 0 if self.board.all() \
-          else None
 
     # Switch the player
     self.player *= -1
