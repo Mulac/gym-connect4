@@ -6,7 +6,7 @@ import random
 
 class Connect4:
     """
-    Simple connect4 game logic.  For two players 1 & 2.
+    Simple connect4 game logic.  For two players.
 
     Attributes
       + board           -> np.array( shape=(cols, rows) )
@@ -37,7 +37,7 @@ class Connect4:
         return [i for i in range(self.cols) if self.board[i][self.rows - 1] == 0]
 
     def successor_states(self):
-        return [(action, copy(self).make_move(action).board) \
+        return [(action, copy(self).make_move(action))
                 for action in self.legal_moves]
 
     def clone(self):
