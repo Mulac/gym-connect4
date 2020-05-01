@@ -16,7 +16,7 @@ class Connect4Env(gym.Env):
   def step(self, action):
     reward = 0
 
-    if action not in self.game.possible_moves:
+    if action not in self.game.legal_moves:
       reward = -10
 
     self.game.make_move(action)
@@ -27,14 +27,14 @@ class Connect4Env(gym.Env):
       self.done = True
       reward = 1 if status == 1 else -1 if status == 2 else 0
 
-    return [v for col in self.game.board.values() for v in col], reward, self.done, None
+    return self.game.board, reward, self.done, None
 
   def reset(self):
     self.game = Connect4()
     self.done = False
 
     # initial empty state
-    return [0]*self.observation_space.n
+    return self.game.board
 
   def render(self, mode='human'):
     self.game.show()

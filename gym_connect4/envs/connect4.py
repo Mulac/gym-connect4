@@ -1,6 +1,6 @@
 import numpy as np
 from itertools import groupby
-from copy import copy
+from copy import deepcopy
 import random
 
 
@@ -37,11 +37,11 @@ class Connect4:
         return [i for i in range(self.cols) if self.board[i][self.rows - 1] == 0]
 
     def successor_states(self):
-        return [(action, copy(self).make_move(action))
+        return [(action, deepcopy(self).make_move(action))
                 for action in self.legal_moves]
 
     def clone(self):
-        return copy(self)
+        return deepcopy(self)
 
     def make_move(self, move):
         assert move in self.legal_moves
@@ -50,8 +50,10 @@ class Connect4:
         top_of_col = np.where(self.board[move] == 0)[0][0]
         self.board[move][top_of_col] = self.player
 
-        # Switch the player
-        self.player *= -1
+        # Switch the player by switching board positions
+        self.board *= -1
+
+        return self.board
 
     def is_winner(self, player):
         brd = self.board
